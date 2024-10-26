@@ -1,1 +1,140 @@
+// script.js
+// Simple storage since we're not using a backend
+const storage = {
+    orders: {},
+    currentUser: null
+};
 
+// Utility functions
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
+    document.getElementById(pageId).classList.remove('hidden');
+}
+
+function generateOrderId() {
+    return Math.floor(Math.random() * 90000) + 10000;
+}
+
+// Login handling
+function handleLogin() {
+    const email = document.getElementById('emailInput').value;
+    const password = document.getElementById('passwordInput').value;
+    
+    // Simple admin check - in real app, use proper authentication
+    if (email === 'admin@brandedbrolly.com' && password === 'admin') {
+        storage.currentUser = email;
+        showPage('adminPage');
+    } else {
+        alert('Invalid credentials');
+    }
+}
+
+// File handling
+document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+const dropZone = document.getElementById('dropZone');
+
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.borderColor = '#0066ff';
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.style.borderColor = '#ccc';
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.style.borderColor = '#ccc';
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+});
+
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    handleFile(file);
+}
+
+function handleFile(file) {
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('previewImage').src = e.target.result;
+            document.getElementById('uploadPreview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        alert('Please upload an image file');
+    }
+}
+
+// Generate approval link
+function generateApprovalLink() {
+    const customerEmail = document.getElementById('customerEmail').value;
+    if (!customerEmail) {
+        alert('Please enter customer email');
+        return;
+    }
+
+    const orderId = generateOrderId();
+    const approvalUrl = `${window.location.origin}${window.location.pathname}#approve-${orderId}`;
+    
+    storage.orders[orderId] = {
+        image: document.getElementById('previewImage').src,
+        customerEmail,
+        status: 'pending'
+    };
+
+    document.getElementById('linkInput').value = approvalUrl;
+    document.getElementById('approvalLink').classList.remove('hidden');
+}
+
+// Copy link to clipboard
+function copyLink() {
+    const linkInput = document.getElementById('linkInput');
+    linkInput.select();
+    document.execCommand('copy');
+    alert('Link copied to clipboard!');
+}
+
+// Check for approval hash on page load
+window.addEventListener('load', () => {
+    if (window.location.hash.startsWith('#approve-')) {
+        const orderId = window.location.hash.replace('#approve-', '');
+        if (storage.orders[orderId]) {
+            document.getElementById('orderId').textContent = orderId;
+            document.getElementById('approvalImage').src = storage.orders[orderId].image;
+            showPage('approvalPage');
+        }
+    }
+});
+
+// Handle approval/disapproval
+function handleApprove() {
+    const orderId = window.location.hash.replace('#approve-', '');
+    const comments = document.getElementById('comments').value;
+    
+    storage.orders[orderId].status = 'approved';
+    storage.orders[orderId].comments = comments;
+    
+    // Set up checkout page
+    document.getElementById('productImage').src = storage.orders[orderId].image;
+    document.getElementById('subtotal').textContent = '$1,200.00';
+    document.getElementById('shipping').textContent = '$0.00';
+    document.getElementById('total').textContent = '$1,200.00';
+    
+    showPage('checkoutPage');
+}
+
+function handleDisapprove() {
+    const orderId = window.location.hash.replace('#approve-', '');
+    const comments = document.getElementById('comments').value;
+    
+    storage.orders[orderId].status = 'rejected';
+    storage.orders[orderId].comments = comments;
+    
+    alert('Design has been rejected. The admin will be notified and will contact you soon.');
+}
+
+function proceedToPayment() {
+    alert('This would connect to your payment processor in a real application.');
+}
