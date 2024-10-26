@@ -1,1 +1,99 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branded Brolly - Visual Approval</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Admin Login Page -->
+    <div id="loginPage" class="page">
+        <div class="container">
+            <img src="https://raw.githubusercontent.com/[YOUR-USERNAME]/visual-approval/main/images/logo.png" alt="Branded Brolly Logo" class="logo">
+            <h1>Welcome back</h1>
+            <div class="login-form">
+                <input type="email" id="emailInput" placeholder="Email">
+                <input type="password" id="passwordInput" placeholder="Password">
+                <button onclick="handleLogin()">Log in</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Admin Dashboard -->
+    <div id="adminPage" class="page hidden">
+        <div class="container">
+            <h1>Upload Visual for Approval</h1>
+            <div class="upload-form">
+                <div class="upload-area" id="dropZone">
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                    <button onclick="document.getElementById('fileInput').click()">Select File</button>
+                    <p>or drag and drop here</p>
+                </div>
+                <div id="uploadPreview" class="preview hidden">
+                    <img id="previewImage" src="" alt="Preview">
+                    <input type="email" id="customerEmail" placeholder="Customer Email">
+                    <button onclick="generateApprovalLink()">Generate Approval Link</button>
+                </div>
+                <div id="approvalLink" class="link-area hidden">
+                    <p>Share this link with your customer:</p>
+                    <div class="link-container">
+                        <input type="text" id="linkInput" readonly>
+                        <button onclick="copyLink()">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Approval Page -->
+    <div id="approvalPage" class="page hidden">
+        <div class="container">
+            <h1>Artwork for order #<span id="orderId"></span></h1>
+            <div class="approval-content">
+                <img id="approvalImage" src="" alt="Artwork">
+                <p>This is a preview of your artwork. You can approve or disapprove the design.</p>
+                <textarea id="comments" placeholder="Add your comments here..."></textarea>
+                <div class="button-group">
+                    <button onclick="handleApprove()">Approve</button>
+                    <button onclick="handleDisapprove()">Disapprove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Page -->
+    <div id="checkoutPage" class="page hidden">
+        <div class="container">
+            <h1>Order Summary</h1>
+            <div class="order-details">
+                <div class="product-info">
+                    <img id="productImage" src="" alt="Product">
+                    <div class="details">
+                        <h2>Product Details</h2>
+                        <p id="productSpecs"></p>
+                    </div>
+                </div>
+                <div class="price-summary">
+                    <div class="price-row">
+                        <span>Subtotal</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Shipping</span>
+                        <span id="shipping">$0.00</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total</span>
+                        <span id="total">$0.00</span>
+                    </div>
+                </div>
+                <button onclick="proceedToPayment()" class="payment-button">Proceed to Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
